@@ -41,7 +41,8 @@ headers = {
 ##############################################################
 ## LOGIN AND GET THE COOKIE
 ##############################################################
-get_cookie = requests.post(url_login, data=credentials, verify=False, timeout=2)
+session = requests.session()
+get_cookie = session.post(url_login, data=credentials, verify=False, timeout=2)
 
 print("Login Status", get_cookie.status_code)
 if get_cookie.status_code == 200:
@@ -49,15 +50,20 @@ if get_cookie.status_code == 200:
 else:
     print("SOMETHING WENT WRONG!")
 
+print("")
+cookie = get_cookie.cookies
+print("Cookie:", cookie)
+print("")
+headers = get_cookie.headers
+print("Cookie headers:", headers)
+print("")
 
-#cookie = get_cookie.json()['cookie']
-#headers = {"Cookie" : cookie}
 
 
 ##############################################################
 ## LOGOUT AND GOODBYE
 ##############################################################
-delete_session = requests.delete(url_logout, verify=False, timeout=2)
+delete_session = session.delete(url_logout, verify=False, timeout=2)
 print("Logout Status: {}".format(delete_session.status_code))
 if delete_session.status_code == 200:
     print("LOGOUT SUCCESS - GOODBYE!!!")
