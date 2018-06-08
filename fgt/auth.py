@@ -52,11 +52,10 @@ else:
 
 print("")
 cookie = get_cookie.cookies
-print("Cookie:", cookie)
-print("")
-headers = get_cookie.headers
-print("Cookie headers:", headers)
-print("")
+items = cookie.items()
+
+for name, value in items:
+    print(name, value)
 
 
 
