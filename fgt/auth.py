@@ -8,7 +8,6 @@
 import requests
 import urllib3
 import pprint
-import getpass
 import json
 import base64
 
@@ -24,7 +23,8 @@ credentials = [
   ('secretkey', password),
 ]
 
-ip_address = "10.10.50.1"
+api_key = "gspdrc1y6cHjd6xg1tHpdstjc0ysfq"
+ip_address = "172.31.40.200"
 port = "444"
 url_login = 'https://{}:{}/logincheck'.format(ip_address, port)
 url_logout = 'https://{}:{}/logout'.format(ip_address, port)
@@ -32,11 +32,6 @@ headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
 }
-
-
-#curl -k -v -c fgt.txt -d username=admin -d secretkey=PASSWORD "https://192.168.128.2:4443/logincheck"
-#curl -k --cookie fgt.txt -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET "https://192.168.128.2:4443/api/v2/monitor/router/ipv4/"
-
 
 ##############################################################
 ## LOGIN AND GET THE COOKIE
@@ -51,12 +46,32 @@ else:
     print("SOMETHING WENT WRONG!")
 
 print("")
-cookie = get_cookie.cookies
-items = cookie.items()
 
-for name, value in items:
-    print(name, value)
+ccsrfrtoken = get_cookie.cookies['ccsrftoken']
+ccsrfrtoken = ccsrfrtoken.replace('"','')
+print("CSRFTOKEN = {}".format(ccsrfrtoken))
 
+##############################################################
+## GET INFO, BUT FIRST DEFINE URL AND HEADERS
+##############################################################
+
+url = 'https://{}:{}/api/v2'.format(ip_address, port)
+#headers = {'Authorization': 'Bearer ' + api_key}
+headers = {
+    'X-CSRFTOKEN': ccsrfrtoken,
+    'Content-Type': "application/json",
+    'Cache-Control': "no-cache",
+}
+
+#params = {'vdom': "root"}
+print("URL = {}".format(url) + "/monitor/firewall/policy")
+print("Headers = {}".format(headers))
+#print(params)
+
+get_policy = requests.session()
+result = get_policy.get(url + "/monitor/firewall/policy", headers=headers, verify=False, timeout=2)
+
+print(result.status_code)
 
 
 ##############################################################
